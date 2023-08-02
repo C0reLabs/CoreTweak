@@ -50,7 +50,7 @@ class MainWindow(QWidget):
             label.setText(p)
             sleep(0.05)
 
-    def create_icon(self, icon):
+    def create_icon(self, icon: str):
         label = QLabel(self)
         pixmap = QPixmap(f'tweaks/{icon}.png')
         label.setPixmap(pixmap)

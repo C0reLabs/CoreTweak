@@ -37,8 +37,9 @@ QPushButton {
 }
 '''
 
+# Custom button
 class TweakButton(QPushButton):
-    def __init__(self, tweak, *args, **kwargs):
+    def __init__(self, tweak: RegFile | CMDTweak, *args, **kwargs):
         super().__init__(tweak.name)
 
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
@@ -70,6 +71,7 @@ class TweakButton(QPushButton):
         elif isinstance(tweak, PowerPlanFile):
             self.clicked.connect(lambda checked, t=self.text():Thread(target=PowerPlanByName, args=(t,)).start())
 
+# Make InfoWindow
 class InfoWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -122,7 +124,7 @@ class UWPRemover(QWidget):
         appsFrame = createFrame()
         appsGrid = QGridLayout(appsFrame)
         for key, value, i in zip(UWPApps.keys(), UWPApps.values(), enumerate(UWPApps.keys())):
-            button = makeButton(key, lambda checked, v=value:Thread(target=removeUWP, args=(v,)).start(), True, 'padding: 5px;font-size: 23px', lambda clicked, v=value:Thread(target=removeUWP, args=(v,True)).start())
+            button = makeButton(key, lambda checked, v=value:Thread(target=removeUWP, args=(v,)).start(), True, 'padding: 3px;font-size: 17px', lambda clicked, v=value:Thread(target=removeUWP, args=(v,True)).start())
             button.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
 
             appsGrid.addWidget(button, i[0] // 3, i[0] % 3, alignment=Qt.AlignmentFlag.AlignCenter)
@@ -160,7 +162,13 @@ def getRegButtons(frame: QFrame):
     grid = QGridLayout(frame)
 
     for i, tweak in enumerate(regtweaks):
-        grid.addWidget(TweakButton(tweak), i // 3, i % 3, alignment=Qt.AlignmentFlag.AlignCenter)
+        button = TweakButton(tweak)
+
+        if not tweak.checkCompatibility(): # Check tweak compatibility
+            button.setEnabled(False)
+            button.setStyleSheet('QPushButton { color: #3e3e42; }')
+
+        grid.addWidget(button, i // 3, i % 3, alignment=Qt.AlignmentFlag.AlignCenter)
 
     grid.setColumnStretch(3, 1)
 
@@ -169,7 +177,12 @@ def getRegButtons(frame: QFrame):
 def getPowerPlans(frame: QFrame):
     grid = QGridLayout(frame)
     for i, scheme in enumerate(schemes):
-        grid.addWidget(TweakButton(scheme), i // 3, i % 3, alignment=Qt.AlignmentFlag.AlignCenter)
+        button = TweakButton(scheme)
+        if scheme.dangerous:
+                effect = QGraphicsDropShadowEffect( offset=QPointF(0, 0), blurRadius=10, color=QColor("#f6f69d"))
+                button.setGraphicsEffect(effect)
+
+        grid.addWidget(button, i // 3, i % 3, alignment=Qt.AlignmentFlag.AlignCenter)
 
     grid.setColumnStretch(3, 1)
 
