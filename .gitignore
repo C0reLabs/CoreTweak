@@ -1,0 +1,6 @@
+# Remove "__pycache__"
+/__pycache__
+# Remove virtualenv
+/venv
+# Remove vcpp
+/vcpp
