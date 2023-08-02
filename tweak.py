@@ -1,5 +1,5 @@
 import os, sys
-import platform
+import psutil
 from download import download
 
 # cd to current directory
@@ -13,6 +13,11 @@ hpet_link = 'https://cdn.discordapp.com/attachments/1070727971515662447/11352862
 
 IsWin11 = lambda : True if sys.getwindowsversion().build >= 22000 else False
 IsWin10 = lambda : False if sys.getwindowsversion().build >= 22000 else True
+IsHDD = lambda: any(
+    partition.fstype.lower() == 'ntfs'
+    for partition in psutil.disk_partitions(all=True)
+    if partition.mountpoint == '/'
+)
 
 class RegFile:
     def __init__(self, name: str, 
@@ -75,14 +80,20 @@ class RegFile:
         if self.only10 and IsWin11():
             return False
         
+        if 'Only For SSD' in self.name and not IsHDD():
+            return False
+        
         return True
 
 class PowerPlanFile:
-    def __init__(self, name: str, desc: str, file: str, warn=None):
+    def __init__(self, name: str, desc: str, file: str, dangerous: bool = False):
         self.name = name
         self.desc = desc
         self.file = file
-        self.warn = warn
+        self.dangerous = dangerous
+
+        if self.dangerous:
+            self.desc += '\nWe do not recommend using this power plan.'
 
         schemes.append(self)
 
@@ -100,8 +111,8 @@ class PowerPlanFile:
         return self.name
 
 class CMDTweak(RegFile):
-    def __init__(self, name: str, desc: str, file: str, silent: bool = True, powerrun: bool = False, only11: bool = False, only10: bool = False, recommended: bool = False):
-        super().__init__(name, desc, file, silent, powerrun, only11, only10, recommended)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def run(self):
         print(f'Applying: {self.name} tweak!')
@@ -160,7 +171,8 @@ UWPApps = {
     'Mail/Calendar': '*windowscommunicationapps*', 
     'Maps': '*windowsmaps*', 
     'Microsoft Solitaire Collection': '*solitairecollection*', 
-    'Movies & TV': '*zunevideo*', 
+    'Movies & TV': '*zunevideo*',
+    'Microsoft Store': '*windowsstore*',
     'News': '*bingnews*', 
     'OneNote': '*onenote*', 
     'Microsoft Phone Companion': '*windowsphone*', 
@@ -191,29 +203,29 @@ def removeAllUWP():
 RegFile('Disable Hibernation', 'Removes hibernation, sort of like sleep mode', 'DisableHibernation')
 RegFile('Disable Telemetry', 'Disable Telemetry, spying', 'DisableTelemetry')
 RegFile('Disable Defender', 'Removes Windows Defender, gives a pretty good FPS boost, but removes protection from your PC', 'DisableDefender', powerrun=True, dangerous=True)
-RegFile('Disable Firewall', 'Removes the firewall because it is not needed and may break some LAN emulation applications', 'DisableFirewall')
+RegFile('Disable Firewall', 'Removes the firewall because it is not needed and may break some LAN emulation applications', 'DisableFirewall', recommended=True)
 RegFile('Disable, Meltdown, Tsx, Spectre', 'Removes Meltdown and Spectre protection, gives a small boost in FPS, recommended for AMD processors', 'DisableMeltdownTsxSpectre')
 RegFile('Disable Security Notifications', 'The title speaks for itself', 'DisableSecurityNotifications')
 RegFile('Disable SysMain (Only for SSD)', 'Removes the SysMain process (fast application startup), useful for SSD, but better not to try this on HDDs', 'DisableSysmain')
-RegFile('Enable OldPhotoViewer', 'Includes old photo viewer, useful for HDD', 'OldPhotoViewer')
+RegFile('Enable OldPhotoViewer', 'Includes old photo viewer, useful for HDD', 'OldPhotoViewer', recommended=True)
 RegFile('Disable BackgroundProcesses', 'Turns off background processes', 'StopBgProcess', only11=True)
 RegFile('Disable Adapter Energysaving', 'Improves the speed of the Internet, sometimes it can increase the Internet speed by 50-70 Mbps', 'DisableAdapterEnergysaving')
 RegFile('Disable Scheduler Triggers', 'Removes scheduled tasks so that they do not load the processor in the background', 'DisableSchedulerTriggers')
 RegFile('Disable UAC and SmartScreen', 'Removes UAC and SmartScreen, helps restore your nerves', 'DisableUACandSmartScreen')
-RegFile('Enable Xbox GameBar', "Includes gamemode, I don't know who needs it, but let it be", 'EnableGameMode')
-RegFile('Disable FullScreenOptimization', 'Disabling full-screen optimization', 'DisableFSO')
+RegFile('Enable Gamemode', "Enables gamemode", 'EnableGameMode')
+RegFile('Disable FullScreenOptimization', 'Disabling full-screen optimization', 'DisableFSO', recommended=True)
 RegFile('Enable classic context menu', 'Enables the old context menu in Windows 11', 'ClassicContextMenu', only11=True)
-RegFile('Disable Sync', 'Removes synchronization, not recommended to turn off if you do not have a local account', 'DisableSync')
+RegFile('Disable Sync', 'Removes synchronization, not recommended to turn off if you do not have a local account', 'DisableSync', dangerous=True)
 
 CMDTweak('Delete OneDrive', 'Completely removes OneDrive from the system', 'DeleteOneDrive', powerrun=True) # beta
 CMDTweak('Decrease latency', 'Reduces system latency', 'DecreaseLatency', True, False, recommended=True)
-CMDTweak('Optimizing script after login', 'Runs a script that lowers the priority of unnecessary processes', 'StartupBat')
+CMDTweak('Optimizing script after login', 'Runs a script that lowers the priority of unnecessary processes', 'StartupBat', recommended=True)
 CMDTweak('Disable Task Scheduler Telemetry', 'Exactly the same as the Disable Scheduler Triggers tweak, but removes telemetry', 'DisableTaskSchedulerTelemetry')
 CMDTweak('Disable HPET', 'Removes HPET - High Precision Event Timer, improves FPS but may slightly degrade system performance', 'DisableHPET', only10=True)
 CMDTweak('Stop Search Indexer', 'Disables file indexing, useful for HDD', 'StopSearchIndexer')
 
 PowerPlanFile('Bitsum Highest Performance', 'Provides Bitsum optimized CPU performance', 'BitsumHighestPerformance')
 PowerPlanFile("Muren's Low Latency", 'Disables power-saving features for better performance and lower latency', 'Muren_Idle_Enabled')
-PowerPlanFile("Little Unixcorn's PowerPlan without idle", 'A custom power plan for having the best latency', 'Unixcorn')
+PowerPlanFile("Little Unixcorn's PowerPlan without idle", 'A custom power plan for having the best latency', 'Unixcorn', True)
 
 version = '1.0 ALPHA'
