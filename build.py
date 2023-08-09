@@ -37,4 +37,4 @@ class Builder:
         for spec in glob('*.spec'):
             os.remove(spec)
 
-Builder(version='1.0 ALPHA', dev=False).build()
+Builder(version='1.1 ALPHA', dev=False).build()
