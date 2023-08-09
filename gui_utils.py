@@ -9,7 +9,7 @@ from tweak import (regtweaks, schemes,
                    version, UWPApps, 
                    removeUWP, CMDTweak,
                    removeAllUWP)
-import webbrowser, sys
+import webbrowser
 
 
 buttonStyleSheet = '''
