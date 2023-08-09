@@ -228,4 +228,4 @@ PowerPlanFile('Bitsum Highest Performance', 'Provides Bitsum optimized CPU perfo
 PowerPlanFile("Muren's Low Latency", 'Disables power-saving features for better performance and lower latency', 'Muren_Idle_Enabled')
 PowerPlanFile("Little Unixcorn's PowerPlan without idle", 'A custom power plan for having the best latency', 'Unixcorn', True)
 
-version = '1.0 ALPHA'
+version = '1.1 ALPHA'
