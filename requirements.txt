@@ -1,4 +1,4 @@
-pyside6
+pyqt6
 download
 psutil
 pyinstaller
