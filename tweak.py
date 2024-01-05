@@ -217,7 +217,6 @@ RegFile('Disable FullScreenOptimization', 'Disabling full-screen optimization', 
 RegFile('Enable classic context menu', 'Enables the old context menu in Windows 11', 'ClassicContextMenu', only11=True)
 RegFile('Disable Sync', 'Removes synchronization, not recommended to turn off if you do not have a local account', 'DisableSync', dangerous=True)
 
-CMDTweak('Delete OneDrive', 'Completely removes OneDrive from the system', 'DeleteOneDrive', powerrun=True) # beta
 CMDTweak('Decrease latency', 'Reduces system latency', 'DecreaseLatency', True, False, recommended=True)
 CMDTweak('Optimizing script after login', 'Runs a script that lowers the priority of unnecessary processes', 'StartupBat', recommended=True)
 CMDTweak('Disable Task Scheduler Telemetry', 'Exactly the same as the Disable Scheduler Triggers tweak, but removes telemetry', 'DisableTaskSchedulerTelemetry')
@@ -228,4 +227,4 @@ PowerPlanFile('Bitsum Highest Performance', 'Provides Bitsum optimized CPU perfo
 PowerPlanFile("Muren's Low Latency", 'Disables power-saving features for better performance and lower latency', 'Muren_Idle_Enabled')
 PowerPlanFile("Little Unixcorn's PowerPlan without idle", 'A custom power plan for having the best latency', 'Unixcorn', True)
 
-version = '1.1 ALPHA'
+version = '1.2 ALPHA'

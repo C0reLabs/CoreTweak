@@ -39,7 +39,7 @@ QPushButton {
 
 # Custom button
 class TweakButton(QPushButton):
-    def __init__(self, tweak: RegFile | CMDTweak, *args, **kwargs):
+    def __init__(self, tweak: CMDTweak, *args, **kwargs):
         super().__init__(tweak.name)
 
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)

@@ -1,4 +1,5 @@
-pyqt6
-download
-psutil
-pyinstaller
+PyQt6==6.6.1
+download==0.3.5
+psutil==5.9.7
+pyinstaller==6.3.0
+pyinstaller-hooks-contrib==2023.12
