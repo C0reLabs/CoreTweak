@@ -1,0 +1,42 @@
+name: Build
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+          
+
+      - name: Install requirements
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run script and set VERSION
+        run: |
+          echo "VERSION=$(python -c 'from tweak import version; print(version)')" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          
+      - name: Make Build
+        run: |
+            echo "Using version ${{ env.VERSION }} in the build script."
+            python build.py "${{ env.VERSION }}"
+
+
+      - name: Set artifact path
+        run: |
+          $ARTIFACT_PATH="CoreTweaks_${env:VERSION}.zip"
+          $ARTIFACT_PATH_UNDERSCORE=$ARTIFACT_PATH -replace ' ', '_'
+          echo "ARTIFACT_PATH_UNDERSCORE=$ARTIFACT_PATH_UNDERSCORE" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.VERSION }}
+          path: ${{ env.ARTIFACT_PATH_UNDERSCORE }}

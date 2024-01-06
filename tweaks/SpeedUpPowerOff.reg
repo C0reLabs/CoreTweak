@@ -1,0 +1,6 @@
+Windows Registry Editor Version 5.00
+
+; decrease time for saving data when powering off
+; default is "12000" = 12 sec
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control]
+"WaitToKillServiceTimeout"="12000"

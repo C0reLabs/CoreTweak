@@ -1,0 +1,9 @@
+Windows Registry Editor Version 5.00
+
+; decrease time of killing processes and showing menu
+[HKEY_CURRENT_USER\Control Panel\Desktop]
+"AutoEndTasks"="1"
+"HungAppTimeout"="1000"
+"WaitToKillAppTimeout"="2000"
+"LowLevelHooksTimeout"="1000"
+"MenuShowDelay"="0"

@@ -1,0 +1,9 @@
+Windows Registry Editor Version 5.00
+
+; disable faststart
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Power]
+"HiberbootEnabled"=dword:00000000
+
+; disable hibernation
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power]
+"HibernateEnabled"=dword:00000000
