@@ -1,6 +1,5 @@
 import os, sys
 import psutil
-import subprocess
 from download import download
 
 # cd to current directory
@@ -16,14 +15,13 @@ vcpp = "https://cdn.discordapp.com/attachments/1070727971515662447/1135279225973
 hpet_link = "https://cdn.discordapp.com/attachments/1070727971515662447/1135286240611151872/checkhpet.exe"
 
 IsWin11 = True if sys.getwindowsversion().build >= 22000 else False
-IsWin10 = False if sys.getwindowsversion().build >= 22000 else True
+IsWin10 = not IsWin11
 
 IsHDD = any(
     partition.fstype.lower() == "ntfs"
     for partition in psutil.disk_partitions(all=True)
     if partition.mountpoint == "/"
 )
-
 
 class RegFile:
     def __init__(
@@ -113,9 +111,11 @@ class PowerPlanFile:
 
     def run(self):
         print(f"Applying: {self.name} scheme!")
+
         scheme_import = os.popen(
             f'powercfg /import "{current_path}\\tweaks\\{self.file}.pow"'
         ).read()
+
         scheme_guid = scheme_import[scheme_import.find("GUID: ") + len("GUID: ") :]
 
         # Set PowerPlan
@@ -128,8 +128,21 @@ class PowerPlanFile:
 
 
 class CMDTweak(RegFile):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        name: str,
+        desc: str,
+        file: str,
+        silent: bool = True,
+        powerrun: bool = False,
+        only11: bool = False,
+        only10: bool = False,
+        recommended: bool = False,
+        dangerous: bool = False,
+    ):
+        super().__init__(
+            name, desc, file, silent, powerrun, only11, only10, recommended, dangerous
+        )
 
     def run(self):
         print(f"Applying: {self.name} tweak!")
@@ -236,7 +249,13 @@ RegFile(
     "Removes hibernation, sort of like sleep mode",
     "DisableHibernation",
 )
-RegFile("Disable Telemetry", "Disable Telemetry, spying", "DisableTelemetry")
+
+RegFile(
+    "Disable Telemetry",
+    "Disable Windows Telemetry, set of procedures designed to collect and process information about you and your behavior at your computer",
+    "DisableTelemetry",
+)
+
 RegFile(
     "Disable Defender",
     "Removes Windows Defender, gives a pretty good FPS boost, but removes protection from your PC",
@@ -244,67 +263,84 @@ RegFile(
     powerrun=True,
     dangerous=True,
 )
+
 RegFile(
     "Disable Firewall",
     "Removes the firewall because it is not needed and may break some LAN emulation applications",
     "DisableFirewall",
     recommended=True,
 )
+
 RegFile(
     "Disable, Meltdown, Tsx, Spectre",
     "Removes Meltdown and Spectre protection, gives a small boost in FPS, recommended for AMD processors",
     "DisableMeltdownTsxSpectre",
 )
+
 RegFile(
     "Disable Security Notifications",
     "The title speaks for itself",
     "DisableSecurityNotifications",
 )
+
 RegFile(
     "Disable SysMain (Only for SSD)",
     "Removes the SysMain process (fast application startup), useful for SSD, but better not to try this on HDDs",
     "DisableSysmain",
 )
+
 RegFile(
     "Enable OldPhotoViewer",
     "Includes old photo viewer, useful for HDD",
     "OldPhotoViewer",
     recommended=True,
 )
+
 RegFile(
     "Disable BackgroundProcesses",
     "Turns off background processes",
     "StopBgProcess",
     only11=True,
 )
+
 RegFile(
     "Disable Adapter Energysaving",
     "Improves the speed of the Internet, sometimes it can increase the Internet speed by 50-70 Mbps",
     "DisableAdapterEnergysaving",
 )
+
 RegFile(
     "Disable Scheduler Triggers",
     "Removes scheduled tasks so that they do not load the processor in the background",
     "DisableSchedulerTriggers",
 )
+
 RegFile(
     "Disable UAC and SmartScreen",
     "Removes UAC and SmartScreen, helps restore your nerves",
     "DisableUACandSmartScreen",
 )
-RegFile("Enable Gamemode", "Enables gamemode", "EnableGameMode")
+
+RegFile(
+    "Enable Gamemode",
+    "Enables Game Mode which increases performance and in particular FPS in games by pausing background processes during game play.",
+    "EnableGameMode",
+)
+
 RegFile(
     "Disable FullScreenOptimization",
     "Disabling full-screen optimization",
     "DisableFSO",
     recommended=True,
 )
+
 RegFile(
     "Enable classic context menu",
     "Enables the old context menu in Windows 11",
     "ClassicContextMenu",
     only11=True,
 )
+
 RegFile(
     "Disable Sync",
     "Removes synchronization, not recommended to turn off if you do not have a local account",
@@ -316,8 +352,7 @@ CMDTweak(
     "Decrease latency",
     "Reduces system latency",
     "DecreaseLatency",
-    True,
-    False,
+    silent=True,
     recommended=True,
 )
 CMDTweak(
@@ -326,11 +361,13 @@ CMDTweak(
     "StartupBat",
     recommended=True,
 )
+
 CMDTweak(
     "Disable Task Scheduler Telemetry",
     "Exactly the same as the Disable Scheduler Triggers tweak, but removes telemetry",
     "DisableTaskSchedulerTelemetry",
 )
+
 CMDTweak(
     "Disable HPET",
     "Removes HPET - High Precision Event Timer, improves FPS but may slightly degrade system performance",
@@ -354,11 +391,13 @@ PowerPlanFile(
     "Provides Bitsum optimized CPU performance",
     "BitsumHighestPerformance",
 )
+
 PowerPlanFile(
     "Muren's Low Latency",
     "Disables power-saving features for better performance and lower latency",
     "Muren_Idle_Enabled",
 )
+
 PowerPlanFile(
     "Little Unixcorn's PowerPlan without idle",
     "A custom power plan for having the best latency",
@@ -366,4 +405,4 @@ PowerPlanFile(
     True,
 )
 
-version = "1.2 ALPHA"
+version = "1.4 ALPHA"
