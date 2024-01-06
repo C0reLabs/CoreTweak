@@ -2,6 +2,7 @@ import os, sys
 import shutil
 from glob import glob
 from zipfile import ZipFile
+from tweak import version
 
 
 logo = '''
@@ -10,7 +11,7 @@ logo = '''
  | |  | | | | |_) |  _|   | |  \ \ /\ / /|  _|   / _ \ | ' /\___ \ 
  | |__| |_| |  _ <| |___  | |   \ V  V / | |___ / ___ \| . \ ___) |
   \____\___/|_| \_\_____| |_|    \_/\_/  |_____/_/   \_\_|\_\____/ 
-                                                                   builder
+                                                                   builder v1.0
 '''
 
 class Builder:
@@ -24,6 +25,7 @@ class Builder:
     
     def build(self, removeBuild: bool = True, makeZip: bool = False):
         print(logo)
+
         os.system(f'''pyinstaller {'--onefile' if self.onefile else ''} {'--clean' if self.clean else ''} --upx-dir "{sys.path[0]}\\upx" --name "{self.name + ' Dev Build' if self.dev else self.name} {self.version}" --icon "{self.icon}" main.py''')
 
         [shutil.move(file, './') for file in glob('dist/*')]
@@ -50,8 +52,9 @@ class Builder:
             zip_object.write(glob('CoreTweaks*.exe')[0])
 
             tweaks_dir = './tweaks'
+            
             if os.path.exists(tweaks_dir):
-                for root, dirs, files in os.walk(tweaks_dir):
+                for root, _, files in os.walk(tweaks_dir):
                     for file in files:
                         file_path = os.path.join(root, file)
                         zip_path = os.path.relpath(file_path, tweaks_dir)
@@ -60,6 +63,4 @@ class Builder:
         print('\n\nMaded zip file with builded executable and tweaks.')
 
 
-Builder(version='1.2 ALPHA', dev=False).build(makeZip=True)
-
-
+Builder(version=version, dev=False).build(makeZip=True)

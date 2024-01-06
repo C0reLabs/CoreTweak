@@ -5,12 +5,9 @@ from random import choice
 from threading import Thread
 from tweak import (regtweaks, schemes, 
                    RegTweakByName, PowerPlanByName, 
-                   RegFile, PowerPlanFile, 
-                   version, UWPApps, 
+                   RegFile, PowerPlanFile, UWPApps, 
                    removeUWP, CMDTweak,
                    removeAllUWP)
-import webbrowser
-
 
 buttonStyleSheet = '''
 QPushButton {
@@ -124,7 +121,7 @@ def getRegButtons(frame: QFrame):
 
         if not tweak.checkCompatibility(): # Check tweak compatibility
             button.setEnabled(False)
-            button.setStyleSheet('QPushButton { color: #3e3e42; }')
+            button.setStyleSheet('QPushButton { color: #3e3e42; padding: 3px; }')
 
         grid.addWidget(button, i // 3, i % 3, alignment=Qt.AlignmentFlag.AlignCenter)
 
@@ -146,18 +143,24 @@ def getPowerPlans(frame: QFrame):
 
 def makeButton(text: str, function, border = False, customStyle = None, rightClickFunction = None):
     button = QPushButton(text)
+    
     button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
     button.setStyleSheet(buttonStyleSheet)
+
     if border:
         button.setStyleSheet(buttonStyleSheet + 'QPushButton { border: 2px solid #3E454A; border-radius: 6px; }')
     if customStyle != None and border:
         button.setStyleSheet(buttonStyleSheet + 'QPushButton { border: 2px solid #3E454A; border-radius: 6px;' + customStyle + '}')
+
     button.setFont(QFont('Bahnschrift', 12))
     button.setMinimumSize(button.sizeHint())
     button.setCursor(Qt.CursorShape.PointingHandCursor)
+    
     button.clicked.connect(function)
+    
     if rightClickFunction != None:
         button.customContextMenuRequested.connect(rightClickFunction)
+    
     return button
 
 def HackAnimation(text):

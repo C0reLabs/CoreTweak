@@ -130,8 +130,7 @@ class MainWindow(QWidget):
         uwpremover = UWPRemover()
 
         def run_uwp():
-            popup = QMessageBox.information(self, 'Note',
-                                            'Right click on the button to bring the application back up')
+            popup = QMessageBox.information(self, 'Note', 'Right click on the button to bring the application back up')
 
             print(popup)
             uwpremover.show()
